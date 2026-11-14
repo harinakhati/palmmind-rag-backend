@@ -1,0 +1,23 @@
+# Introduction to Artificial Intelligence
+
+Artificial Intelligence (AI) is a branch of computer science that focuses on creating systems capable of performing tasks that normally require human intelligence.
+
+## Machine Learning
+
+Machine Learning is a subset of Artificial Intelligence. It allows computers to learn patterns from data and make predictions without being explicitly programmed for every task.
+
+There are three common types of machine learning:
+
+1. Supervised Learning: Models learn from labelled training data.
+2. Unsupervised Learning: Models discover patterns in unlabelled data.
+3. Reinforcement Learning: Models learn through interaction with an environment and feedback in the form of rewards or penalties.
+
+## Applications
+
+Artificial Intelligence is used in healthcare, education, finance, agriculture, transportation, and cybersecurity.
+
+In healthcare, AI can support medical image analysis, disease prediction, and clinical decision-making.
+
+## Challenges
+
+Some important challenges include data privacy, algorithmic bias, model interpretability, security, and computational costs.

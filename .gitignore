@@ -17,6 +17,9 @@ htmlcov/
 # Uploaded documents
 uploads/
 
+# Qdrant local database
+qdrant_storage/
+
 # Editor and OS files
 .vscode/
 .idea/
