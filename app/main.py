@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from app.api.document_routes import router as document_router
 from app.services.vector_store import client as qdrant_client
 from app.services.redis_service import get_redis_client
-
+from app.api.booking_routes import router as booking_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,7 +35,7 @@ app = FastAPI(
 )
 
 app.include_router(document_router)
-
+app.include_router(booking_router)
 
 @app.get("/")
 async def root():

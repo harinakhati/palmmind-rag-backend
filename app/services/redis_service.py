@@ -41,3 +41,39 @@ def save_conversation_history(
         json.dumps(history),
         ex=CONVERSATION_TTL,
     )
+
+def get_booking_state(
+    client: redis.Redis,
+    conversation_id: str,
+) -> dict:
+    key = f"booking:{conversation_id}"
+
+    booking_state = client.get(key)
+
+    if booking_state is None:
+        return {}
+
+    return json.loads(booking_state)
+
+
+def save_booking_state(
+    client: redis.Redis,
+    conversation_id: str,
+    booking_state: dict,
+) -> None:
+    key = f"booking:{conversation_id}"
+
+    client.set(
+        key,
+        json.dumps(booking_state),
+        ex=CONVERSATION_TTL,
+    )
+
+
+def clear_booking_state(
+    client: redis.Redis,
+    conversation_id: str,
+) -> None:
+    key = f"booking:{conversation_id}"
+
+    client.delete(key)

@@ -5,6 +5,8 @@ from sqlalchemy import (
     String,
     Integer,
     DateTime,
+    Date,
+    Time,
 )
 
 from app.database import Base
@@ -71,3 +73,39 @@ class Document(Base):
     default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
     nullable=False,
 )
+
+class InterviewBooking(Base):
+    __tablename__ = "interview_bookings"
+
+    booking_id = Column(
+        String(36),
+        primary_key=True,
+        index=True,
+    )
+
+    name = Column(
+        String(150),
+        nullable=False,
+    )
+
+    email = Column(
+        String(255),
+        nullable=False,
+        index=True,
+    )
+
+    interview_date = Column(
+        Date,
+        nullable=False,
+    )
+
+    interview_time = Column(
+        Time,
+        nullable=False,
+    )
+
+    created_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc).replace(tzinfo=None),
+        nullable=False,
+    )

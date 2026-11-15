@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+from datetime import date
+from pydantic import ValidationError
+
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
@@ -96,3 +99,91 @@ ANSWER:
         raise RuntimeError("Gemini returned an empty response.")
 
     return response.text
+
+import json
+
+from app.schemas.booking import BookingDetailsExtraction
+
+def extract_booking_details(message: str) -> dict:
+    """Extract and independently validate interview booking details."""
+
+    if not message.strip():
+        raise ValueError("Message cannot be empty.")
+
+    today = date.today().isoformat()
+
+    prompt = f"""
+You are an information extraction assistant.
+
+Extract interview booking details from the user's message.
+
+The possible fields are:
+- name
+- email
+- interview_date
+- interview_time
+
+Rules:
+1. Extract only information explicitly provided by the user.
+2. Do not invent missing information.
+3. Use null for fields that are not provided.
+4. Return interview_date in YYYY-MM-DD format.
+5. Return interview_time in 24-hour HH:MM format.
+6. Today's date is {today}.
+7. Interpret relative dates using today's date.
+8. If a date or time is ambiguous, return null for that field.
+9. Return valid JSON only.
+
+User message:
+{message}
+"""
+
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt,
+        config={
+            "temperature": 0,
+            "response_mime_type": "application/json",
+        },
+    )
+
+    if not response.text:
+        raise RuntimeError("Gemini returned an empty extraction response.")
+
+    extracted_data = json.loads(response.text)
+
+    validated_data = {}
+    validation_errors = {}
+
+    fields = (
+        "name",
+        "email",
+        "interview_date",
+        "interview_time",
+    )
+
+    for field in fields:
+        value = extracted_data.get(field)
+
+        if value is None:
+            validated_data[field] = None
+            continue
+
+        try:
+            field_result = BookingDetailsExtraction.model_validate(
+                {field: value}
+            )
+
+            validated_data[field] = field_result.model_dump(
+                mode="json"
+            )[field]
+
+        except ValidationError as error:
+            validated_data[field] = None
+
+            validation_errors[field] = error.errors()[0]["msg"]
+
+    return {
+        **validated_data,
+        "_validation_errors": validation_errors,
+    }
